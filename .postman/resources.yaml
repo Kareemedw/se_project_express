@@ -1,0 +1,8 @@
+workspace:
+  id: eaa59182-1a52-4284-8552-085aaa497dd3
+localResources:
+  collections:
+    - ../postman/collections/My Collection
+cloudResources:
+  collections:
+    ../postman/collections/My Collection: 54576241-c075a477-ae34-44bb-9c69-8698fbfaab10
