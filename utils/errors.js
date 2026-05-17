@@ -4,7 +4,6 @@ const ITEM_NOT_FOUND = 404;
 const CREATED = 201;
 const REQUEST_STATUS_OK = 200;
 const REQUEST_COMPLETED = 204;
-404;
 
 module.exports = {
   BAD_REQUEST_STATUS_CODE,
