@@ -1,4 +1,3 @@
-const { Linter } = require("eslint");
 const ClothingItem = require("../models/clothingItem");
 const {
   BAD_REQUEST_STATUS_CODE,
@@ -6,7 +5,6 @@ const {
   ITEM_NOT_FOUND,
   CREATED,
   REQUEST_STATUS_OK,
-  REQUEST_COMPLETED,
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
