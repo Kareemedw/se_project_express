@@ -2,6 +2,7 @@ const User = require("../models/user");
 const {
   BAD_REQUEST_STATUS_CODE,
   INTERNAL_SERVER_ERROR,
+  ITEM_NOT_FOUND,
   CREATED,
   REQUEST_STATUS_OK,
 } = require("../utils/errors");
@@ -40,9 +41,7 @@ const getUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+        return res.status(ITEM_NOT_FOUND).send({ message: err.message });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
