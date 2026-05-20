@@ -27,9 +27,11 @@ const createUser = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+          .send({ message: "Requested resource not found" });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Internal Server Error!!" });
     });
 };
 
@@ -41,9 +43,11 @@ const getUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(ITEM_NOT_FOUND).send({ message: err.message });
+        return res.status(ITEM_NOT_FOUND).send({ message: "Item not found" });
       }
-      return res.status(BAD_REQUEST_STATUS_CODE).send({ message: err.message });
+      return res
+        .status(BAD_REQUEST_STATUS_CODE)
+        .send({ message: "Requested resource not found" });
     });
 };
 

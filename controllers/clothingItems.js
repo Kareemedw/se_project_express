@@ -25,7 +25,9 @@ const createItem = (req, res) => {
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: err.message });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Requested resource not found" });
     });
 };
 
@@ -34,25 +36,9 @@ const getItems = (req, res) => {
     .then((item) => res.status(REQUEST_STATUS_OK).send(item))
     .catch((err) => {
       console.error(err);
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
-    });
-};
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail()
-    .then((item) => res.status(REQUEST_STATUS_OK).send({ data: item }))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
-      }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Internal Server Error!!" });
     });
 };
 
@@ -70,9 +56,13 @@ const deleteItem = (req, res) => {
           .send({ message: "Invalid item ID" });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(ITEM_NOT_FOUND).send({ message: err.message });
+        return res
+          .status(ITEM_NOT_FOUND)
+          .send({ message: "Requested resource not found" });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Internal Server Error!!" });
     });
 };
 
@@ -101,7 +91,9 @@ const likeItem = (req, res) => {
           .send({ message: "Invalid item ID" });
       }
 
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Internal Server Error!!" });
     });
 };
 
@@ -121,21 +113,24 @@ const dislikeItem = (req, res) => {
       console.error(err);
 
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid item ID" });
+        return res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ message: "Invalid item ID" });
       }
 
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: "Item not found" });
+        return res.status(ITEM_NOT_FOUND).send({ message: "Item not found" });
       }
 
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Internal Server Error!!" });
     });
 };
 
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,
