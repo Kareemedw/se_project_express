@@ -6,13 +6,7 @@ const {
   likeItem,
   dislikeItem,
 } = require("../controllers/clothingItems");
-const {
-  BAD_REQUEST_STATUS_CODE,
-  INTERNAL_SERVER_ERROR,
-  ITEM_NOT_FOUND,
-  CREATED,
-  REQUEST_STATUS_OK,
-} = require("../utils/errors");
+const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 
 // CRUD
 
