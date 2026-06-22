@@ -5,6 +5,7 @@ const {
   ITEM_NOT_FOUND,
   CREATED,
   REQUEST_STATUS_OK,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
@@ -33,7 +34,7 @@ const createItem = (req, res) => {
 
 const getItems = (req, res) => {
   ClothingItem.find({})
-    .then((item) => res.status(REQUEST_STATUS_OK).send(item))
+    .then((items) => res.status(REQUEST_STATUS_OK).send(items))
     .catch((err) => {
       console.error(err);
       return res
@@ -45,9 +46,19 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
-    .then((item) => res.status(REQUEST_STATUS_OK).send({ data: item }))
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        return res
+          .status(FORBIDDEN)
+          .send({ message: "You are not allowed to delete this item" });
+      }
+
+      return ClothingItem.findByIdAndDelete(itemId).then(() =>
+        res.status(REQUEST_STATUS_OK).send({ message: "Item deleted" })
+      );
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
@@ -59,6 +70,11 @@ const deleteItem = (req, res) => {
         return res
           .status(ITEM_NOT_FOUND)
           .send({ message: "Requested resource not found" });
+      }
+      if (err.name === "CastError") {
+        return res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ message: "Invalid item ID" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
