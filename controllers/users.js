@@ -15,15 +15,6 @@ const {
 
 // GET /users
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(REQUEST_STATUS_OK).send(users))
-    .catch((err) => {
-      console.error(err);
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
-    });
-};
-
 const createUser = (req, res) => {
   if (!req.body) {
     return res.status(BAD_REQUEST_STATUS_CODE).send({
@@ -52,11 +43,18 @@ const createUser = (req, res) => {
     )
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Requested resource not found" });
+      if (err.code === 11000) {
+        return res.status(CONFLICT).send({
+          message: "Email already exists",
+        });
       }
+
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST_STATUS_CODE).send({
+          message: "Invalid user data",
+        });
+      }
+
       return res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: "Internal Server Error!!" });
@@ -101,7 +99,17 @@ const login = (req, res) => {
       });
     })
     .catch((err) => {
-      res.status(INVALID_AUTHENTICATION).send({ message: err.message });
+      console.error(err);
+
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(INVALID_AUTHENTICATION)
+          .send({ message: "Incorrect email or password" });
+      }
+
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Internal Server Error" });
     });
 };
 
@@ -125,7 +133,7 @@ const updateCurrentUser = (req, res) => {
         return res.status(ITEM_NOT_FOUND).send({ message: "User not found" });
       }
 
-      if (err.name === "validationError") {
+      if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: "Invalid user data" });
@@ -138,7 +146,6 @@ const updateCurrentUser = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
   createUser,
   getCurrentUser,
   login,

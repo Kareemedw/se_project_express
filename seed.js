@@ -3,7 +3,7 @@ const clothingItem = require("./models/clothingItem");
 
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
-const owner = "5d8b8592978f8bd833ca8133";
+const owner = "6a353d650ca36eeda047de73";
 
 const items = [
   {

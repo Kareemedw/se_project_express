@@ -5,7 +5,7 @@ const {
   ITEM_NOT_FOUND,
   CREATED,
   REQUEST_STATUS_OK,
-  FORBIDDEN,
+  CONFLICT,
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
@@ -28,7 +28,7 @@ const createItem = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Requested resource not found" });
+        .send({ message: "Internal Server Error!!" });
     });
 };
 
@@ -51,7 +51,7 @@ const deleteItem = (req, res) => {
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
         return res
-          .status(FORBIDDEN)
+          .status(CONFLICT)
           .send({ message: "You are not allowed to delete this item" });
       }
 
