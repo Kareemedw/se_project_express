@@ -1,8 +1,9 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const { JWT_SECRET = "dev-secret" } = process.env;
+
+const User = require("../models/user");
 
 const {
   BAD_REQUEST_STATUS_CODE,
@@ -11,6 +12,7 @@ const {
   CREATED,
   REQUEST_STATUS_OK,
   INVALID_AUTHENTICATION,
+  CONFLICT,
 } = require("../utils/errors");
 
 // GET /users
@@ -71,32 +73,26 @@ const getCurrentUser = (req, res) => {
         return res.status(ITEM_NOT_FOUND).send({ message: "Item not found" });
       }
       return res
-        .status(BAD_REQUEST_STATUS_CODE)
-        .send({ message: "Requested resource not found" });
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Internal Server Error!!" });
     });
 };
 
 const login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findOne({ email })
-    .select("+password")
+  if (!email || !password) {
+    return res.status(BAD_REQUEST_STATUS_CODE).send({
+      message: "Email and password are required",
+    });
+  }
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error("Incorrect email or password"));
-      }
-
-      return bcrypt.compare(password, user.password).then((matched) => {
-        if (!matched) {
-          return Promise.reject(new Error("Incorrect email or password"));
-        }
-
-        const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-          expiresIn: "7d",
-        });
-
-        return res.send({ token });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
       });
+
+      res.send({ token });
     })
     .catch((err) => {
       console.error(err);

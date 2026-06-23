@@ -5,7 +5,7 @@ const {
   ITEM_NOT_FOUND,
   CREATED,
   REQUEST_STATUS_OK,
-  CONFLICT,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
@@ -51,7 +51,7 @@ const deleteItem = (req, res) => {
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
         return res
-          .status(CONFLICT)
+          .status(FORBIDDEN)
           .send({ message: "You are not allowed to delete this item" });
       }
 
@@ -70,11 +70,6 @@ const deleteItem = (req, res) => {
         return res
           .status(ITEM_NOT_FOUND)
           .send({ message: "Requested resource not found" });
-      }
-      if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid item ID" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
