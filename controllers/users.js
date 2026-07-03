@@ -24,20 +24,24 @@ const createUser = (req, res) => {
     });
   }
 
-  const { name, avatar, email, password } = req.body;
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).send({
+      message: "username, email, and password are required",
+    });
+  }
 
   return bcrypt
     .hash(password, 10)
     .then((hash) =>
       User.create({
-        name,
-        avatar,
+        username,
         email,
         password: hash,
       }).then((user) =>
         res.status(CREATED).send({
-          name: user.name,
-          avatar: user.avatar,
+          username: user.username,
           email: user.email,
           _id: user._id,
         })
