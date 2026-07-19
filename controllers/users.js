@@ -24,11 +24,11 @@ const createUser = (req, res) => {
     });
   }
 
-  const { username, email, password } = req.body;
+  const { name, email, password, avatar } = req.body;
 
-  if (!username || !email || !password) {
+  if (!name || !email || !password) {
     return res.status(400).send({
-      message: "username, email, and password are required",
+      message: "name, email, and password are required",
     });
   }
 
@@ -36,14 +36,16 @@ const createUser = (req, res) => {
     .hash(password, 10)
     .then((hash) =>
       User.create({
-        username,
+        name,
         email,
         password: hash,
+        avatar,
       }).then((user) =>
         res.status(CREATED).send({
-          username: user.username,
+          name: user.name,
           email: user.email,
           _id: user._id,
+          avatar: user.avatar,
         })
       )
     )
