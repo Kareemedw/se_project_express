@@ -24,7 +24,7 @@ const createUser = (req, res) => {
     });
   }
 
-  const { name, email, password, avatar } = req.body;
+  const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).send({
@@ -39,13 +39,11 @@ const createUser = (req, res) => {
         name,
         email,
         password: hash,
-        avatar,
       }).then((user) =>
         res.status(CREATED).send({
           name: user.name,
           email: user.email,
           _id: user._id,
-          avatar: user.avatar,
         })
       )
     )
