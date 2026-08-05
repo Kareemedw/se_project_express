@@ -9,6 +9,8 @@ const { errors } = require("celebrate");
 
 app.use(cors());
 
+require("dotenv").config();
+
 const mainRouter = require("./routes/index");
 
 const errorHandler = require("./middlewares/error-handler");
