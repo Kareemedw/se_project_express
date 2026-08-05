@@ -22,13 +22,10 @@ const createItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+        err.statusCode = BAD_REQUEST_STATUS_CODE;
+        err.message = "Invalid item data";
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Internal Server Error!!" });
+      next(err);
     });
 };
 
@@ -37,9 +34,7 @@ const getItems = (req, res) => {
     .then((items) => res.status(REQUEST_STATUS_OK).send(items))
     .catch((err) => {
       console.error(err);
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Internal Server Error!!" });
+      next(err);
     });
 };
 
@@ -62,18 +57,14 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid item ID" });
+        err.statusCode = BAD_REQUEST_STATUS_CODE;
+        err.message = "Invalid item data";
       }
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(ITEM_NOT_FOUND)
-          .send({ message: "Requested resource not found" });
+        err.statusCode = ITEM_NOT_FOUND;
+        err.message = "Item not found";
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Internal Server Error!!" });
+      next(err);
     });
 };
 

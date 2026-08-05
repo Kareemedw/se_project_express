@@ -50,20 +50,16 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.code === 11000) {
-        return res.status(CONFLICT).send({
-          message: "Email already exists",
-        });
+        err.statusCode = CONFLICT;
+        err.message = "Email already exists";
       }
 
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: "Invalid user data",
-        });
+        err.statusCode = BAD_REQUEST_STATUS_CODE;
+        err.message = "Invalid user data";
       }
 
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Internal Server Error!!" });
+      next(err);
     });
 };
 
@@ -74,11 +70,10 @@ const getCurrentUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(ITEM_NOT_FOUND).send({ message: "Item not found" });
+        err.statusCode = ITEM_NOT_FOUND;
+        err.message = "Item not found";
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Internal Server Error!!" });
+      next(err);
     });
 };
 
@@ -102,14 +97,11 @@ const login = (req, res) => {
       console.error(err);
 
       if (err.message === "Incorrect email or password") {
-        return res
-          .status(INVALID_AUTHENTICATION)
-          .send({ message: "Incorrect email or password" });
+        err.statusCode = INVALID_AUTHENTICATION;
+        err.message = "Incorrect email or password";
       }
 
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Internal Server Error" });
+      next(err);
     });
 };
 
@@ -130,18 +122,17 @@ const updateCurrentUser = (req, res) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        return res.status(ITEM_NOT_FOUND).send({ message: "User not found" });
+        err.statusCode = ITEM_NOT_FOUND;
+        err.message = "User not found";
       }
 
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid user data" });
+        return res;
+        err.statusCode = BAD_REQUEST_STATUS_CODE;
+        err.message = "Invalid user data";
       }
 
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Internal Server Error" });
+      next(err);
     });
 };
 
