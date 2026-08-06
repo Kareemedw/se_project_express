@@ -7,7 +7,16 @@ const { PORT = 3001 } = process.env;
 const cors = require("cors");
 const { errors } = require("celebrate");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://weather-wear.ignorelist.com",
+      "https://www.weather-wear.ignorelist.com",
+    ],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 require("dotenv").config();
 
