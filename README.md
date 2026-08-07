@@ -14,6 +14,12 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 
 # Project Pitch Video -
 
+## 1
+
+https://drive.google.com/drive/folders/13qxB4PPvC_018GbjXSaevuxLXIuJfIrp?dmr=1&ec=wgc-drive-%5Bmodule%5D-goto
+
+## 2
+
 https://drive.google.com/file/d/1EKrt5wxZ_9oNlxf5FW7D-gDT2C4S2MRG/view?usp=sharing
 
 # Author:
