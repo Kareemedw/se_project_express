@@ -12,6 +12,7 @@ app.use(
     origin: [
       "https://weather-wear.ignorelist.com",
       "https://www.weather-wear.ignorelist.com",
+      "http://localhost:3000",
     ],
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
