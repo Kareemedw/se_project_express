@@ -10,12 +10,20 @@ The back-end project is focused on creating a server for the WTWR application. Y
 
 ### Testing
 
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+Before committing your code, make sure you edit the file `Sprint 15` in the root folder. The file `Sprint 15` should contain the number of the sprint you're currently working on. For ex. 12
+
+# Github Frontend Link
+
+https://github.com/Kareemedw/se_project_react
 
 # Frontend Links
 
 https://weather-wear.ignorelist.com
 https://www.weather-wear.ignorelist.com
+
+# Backend Link
+
+http://api.weather-wear.ignorelist.com
 
 # Project Pitch Video -
 
