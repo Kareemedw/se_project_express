@@ -6,7 +6,7 @@ const {
   Forbidden,
 } = require("../utils/errors");
 
-const { Created, RequestStatusOk } = require("../utils/constants");
+const { CREATED, REQUEST_STATUS_OK } = require("../utils/constants");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
@@ -17,7 +17,7 @@ const createItem = (req, res, next) => {
     owner: req.user._id,
   })
     .then((item) => {
-      res.status(Created).send(item);
+      res.status(CREATED).send(item);
     })
     .catch((err) => {
       console.error(err);
@@ -30,7 +30,7 @@ const createItem = (req, res, next) => {
 
 const getItems = (req, res, next) => {
   ClothingItem.find({})
-    .then((items) => res.status(RequestStatusOk).send(items))
+    .then((items) => res.status(REQUEST_STATUS_OK).send(items))
     .catch((err) => {
       console.error(err);
       next(err);
@@ -50,7 +50,7 @@ const deleteItem = (req, res, next) => {
       }
 
       return ClothingItem.findByIdAndDelete(itemId).then(() =>
-        res.status(RequestStatusOk).send({ message: "Item deleted" })
+        res.status(REQUEST_STATUS_OK).send({ message: "Item deleted" })
       );
     })
     .catch((err) => {
@@ -75,7 +75,7 @@ const likeItem = (req, res) => {
   )
     .orFail()
     .then((item) => {
-      res.status(RequestStatusOk).send(item);
+      res.status(REQUEST_STATUS_OK).send(item);
     })
     .catch((err) => {
       console.error(err);
@@ -104,7 +104,7 @@ const dislikeItem = (req, res) => {
   )
     .orFail()
     .then((item) => {
-      res.status(RequestStatusOk).send(item);
+      res.status(REQUEST_STATUS_OK).send(item);
     })
     .catch((err) => {
       console.error(err);

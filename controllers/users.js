@@ -10,9 +10,10 @@ const {
   InternalServerError,
   ItemNotFound,
   Conflict,
+  UnauthorizedError,
 } = require("../utils/errors");
 
-const { Created, RequestStatusOk } = require("../utils/constants");
+const { CREATED, REQUEST_STATUS_OK } = require("../utils/constants");
 
 // GET /users
 
@@ -39,7 +40,7 @@ const createUser = (req, res, next) => {
         email,
         password: hash,
       }).then((user) =>
-        res.status(Created).send({
+        res.status(CREATED).send({
           name: user.name,
           email: user.email,
           _id: user._id,
@@ -63,12 +64,12 @@ const createUser = (req, res, next) => {
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
-    .then((user) => res.status(RequestStatusOk).send(user))
+    .then((user) => res.status(REQUEST_STATUS_OK).send(user))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         err.statusCode = ItemNotFound;
-        err.message = "Item not found";
+        err.message = "User not found";
       }
       next(err);
     });
@@ -94,9 +95,7 @@ const login = (req, res, next) => {
       console.error(err);
 
       if (err.message === "Incorrect email or password") {
-        return next(
-          new InvalidAuthentication({ message: "Incorrect email or password" })
-        );
+        return next(new UnauthorizedError("Incorrect email or password"));
       }
 
       next(err);
@@ -115,7 +114,7 @@ const updateCurrentUser = (req, res, next) => {
     }
   )
     .orFail()
-    .then((user) => res.status(RequestStatusOk).send(user))
+    .then((user) => res.status(REQUEST_STATUS_OK).send(user))
     .catch((err) => {
       console.error(err);
 

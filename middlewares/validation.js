@@ -44,6 +44,10 @@ const validateUserBody = celebrate({
       "string.empty": 'The "avatar" field must be filled in',
       "any.required": 'The "name" field is required',
     }),
+
+    email: Joi.string().required().email(),
+
+    password: Joi.string().required(),
   }),
 });
 
