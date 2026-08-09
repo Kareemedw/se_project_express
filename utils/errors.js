@@ -1,21 +1,46 @@
-const BAD_REQUEST_STATUS_CODE = 400;
-const INTERNAL_SERVER_ERROR = 500;
-const ITEM_NOT_FOUND = 404;
-const CREATED = 201;
-const REQUEST_STATUS_OK = 200;
-const REQUEST_COMPLETED = 204;
-const INVALID_AUTHENTICATION = 401;
-const CONFLICT = 409;
-const FORBIDDEN = 403;
+class BadRequestStatusCode extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 400;
+  }
+}
+class InternalServerError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 500;
+  }
+}
+class ItemNotFound extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 404;
+  }
+}
+
+class Conflict extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 409;
+  }
+}
+class Forbidden extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 403;
+  }
+}
+class UnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 401;
+  }
+}
 
 module.exports = {
-  BAD_REQUEST_STATUS_CODE,
-  INTERNAL_SERVER_ERROR,
-  CREATED,
-  REQUEST_STATUS_OK,
-  ITEM_NOT_FOUND,
-  REQUEST_COMPLETED,
-  INVALID_AUTHENTICATION,
-  CONFLICT,
-  FORBIDDEN,
+  BadRequestStatusCode,
+  InternalServerError,
+  ItemNotFound,
+  Conflict,
+  Forbidden,
+  UnauthorizedError,
 };

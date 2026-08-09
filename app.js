@@ -21,6 +21,12 @@ app.use(
 
 require("dotenv").config();
 
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 const mainRouter = require("./routes/index");
 
 const errorHandler = require("./middlewares/error-handler");

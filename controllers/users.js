@@ -6,20 +6,19 @@ const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 
 const {
-  BAD_REQUEST_STATUS_CODE,
-  INTERNAL_SERVER_ERROR,
-  ITEM_NOT_FOUND,
-  CREATED,
-  REQUEST_STATUS_OK,
-  INVALID_AUTHENTICATION,
-  CONFLICT,
+  BadRequestStatusCode,
+  InternalServerError,
+  ItemNotFound,
+  Conflict,
 } = require("../utils/errors");
+
+const { Created, RequestStatusOk } = require("../utils/constants");
 
 // GET /users
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   if (!req.body) {
-    return res.status(BAD_REQUEST_STATUS_CODE).send({
+    return res.status(BadRequestStatusCode).send({
       message: "Request body is missing",
     });
   }
@@ -40,7 +39,7 @@ const createUser = (req, res) => {
         email,
         password: hash,
       }).then((user) =>
-        res.status(CREATED).send({
+        res.status(Created).send({
           name: user.name,
           email: user.email,
           _id: user._id,
@@ -50,13 +49,11 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.code === 11000) {
-        err.statusCode = CONFLICT;
-        err.message = "Email already exists";
+        return next(new Conflict({ message: "Email already exist" }));
       }
 
       if (err.name === "ValidationError") {
-        err.statusCode = BAD_REQUEST_STATUS_CODE;
-        err.message = "Invalid user data";
+        return next(new BadRequestStatusCode({ message: "Invalid user data" }));
       }
 
       next(err);
@@ -66,11 +63,11 @@ const createUser = (req, res) => {
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
-    .then((user) => res.status(REQUEST_STATUS_OK).send(user))
+    .then((user) => res.status(RequestStatusOk).send(user))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        err.statusCode = ITEM_NOT_FOUND;
+        err.statusCode = ItemNotFound;
         err.message = "Item not found";
       }
       next(err);
@@ -81,7 +78,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(BAD_REQUEST_STATUS_CODE).send({
+    return res.status(BadRequestStatusCode).send({
       message: "Email and password are required",
     });
   }
@@ -97,8 +94,9 @@ const login = (req, res, next) => {
       console.error(err);
 
       if (err.message === "Incorrect email or password") {
-        err.statusCode = INVALID_AUTHENTICATION;
-        err.message = "Incorrect email or password";
+        return next(
+          new InvalidAuthentication({ message: "Incorrect email or password" })
+        );
       }
 
       next(err);
@@ -117,18 +115,18 @@ const updateCurrentUser = (req, res, next) => {
     }
   )
     .orFail()
-    .then((user) => res.status(REQUEST_STATUS_OK).send(user))
+    .then((user) => res.status(RequestStatusOk).send(user))
     .catch((err) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        err.statusCode = ITEM_NOT_FOUND;
+        err.statusCode = ItemNotFound;
         err.message = "User not found";
       }
 
       if (err.name === "ValidationError") {
         return res;
-        err.statusCode = BAD_REQUEST_STATUS_CODE;
+        err.statusCode = BadRequestStatusCode;
         err.message = "Invalid user data";
       }
 
