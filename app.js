@@ -31,7 +31,7 @@ const mainRouter = require("./routes/index");
 
 const errorHandler = require("./middlewares/error-handler");
 
-const { requestLogger, errorLogger } = require("./middlewares/logger");
+const { requestLogger } = require("./middlewares/logger");
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")

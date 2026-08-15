@@ -7,11 +7,10 @@ const User = require("../models/user");
 
 const {
   BadRequestStatusCode,
-  InternalServerError,
-  ItemNotFound,
-  Conflict,
-  UnauthorizedError,
-} = require("../utils/errors");
+} = require("../utils/errors/BadRequestStatusCode");
+const { NotFoundError } = require("../utils/errors/NotFoundError");
+const { Conflict } = require("../utils/errors/Conflict");
+const { UnauthorizedError } = require("../utils/errors/UnauthorizedError");
 
 const { CREATED, REQUEST_STATUS_OK } = require("../utils/constants");
 
@@ -19,17 +18,21 @@ const { CREATED, REQUEST_STATUS_OK } = require("../utils/constants");
 
 const createUser = (req, res, next) => {
   if (!req.body) {
-    return res.status(BadRequestStatusCode).send({
-      message: "Request body is missing",
-    });
+    return next(
+      new BadRequestStatusCode({
+        message: "Request body is missing",
+      })
+    );
   }
 
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).send({
-      message: "name, email, and password are required",
-    });
+    return next(
+      new BadRequestStatusCode({
+        message: "name, email, and password are required",
+      })
+    );
   }
 
   return bcrypt
@@ -57,7 +60,7 @@ const createUser = (req, res, next) => {
         return next(new BadRequestStatusCode({ message: "Invalid user data" }));
       }
 
-      next(err);
+      return next(err);
     });
 };
 
@@ -68,10 +71,9 @@ const getCurrentUser = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        err.statusCode = ItemNotFound;
-        err.message = "User not found";
+        return next(new NotFoundError({ message: "User not found" }));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -79,9 +81,11 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(BadRequestStatusCode).send({
-      message: "Email and password are required",
-    });
+    return next(
+      new BadRequestStatusCode({
+        message: "Email and password are required",
+      })
+    );
   }
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -98,7 +102,7 @@ const login = (req, res, next) => {
         return next(new UnauthorizedError("Incorrect email or password"));
       }
 
-      next(err);
+      return next(err);
     });
 };
 
@@ -119,17 +123,18 @@ const updateCurrentUser = (req, res, next) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        err.statusCode = ItemNotFound;
-        err.message = "User not found";
+        return next(new NotFoundError({ message: "User not found" }));
       }
 
       if (err.name === "ValidationError") {
-        return res;
-        err.statusCode = BadRequestStatusCode;
-        err.message = "Invalid user data";
+        return next(
+          new BadRequestStatusCode({
+            message: "Email and password are required",
+          })
+        );
       }
 
-      next(err);
+      return next(err);
     });
 };
 

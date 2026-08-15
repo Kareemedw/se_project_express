@@ -1,10 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
 const {
   BadRequestStatusCode,
-  InternalServerError,
-  ItemNotFound,
-  Forbidden,
-} = require("../utils/errors");
+} = require("../utils/errors/BadRequestStatusCode");
+const { NotFoundError } = require("../utils/errors/NotFoundError");
+const { InternalServerError } = require("../utils/errors/InternalServerError");
+const { Forbidden } = require("../utils/errors/Forbidden");
 
 const { CREATED, REQUEST_STATUS_OK } = require("../utils/constants");
 
@@ -24,7 +24,7 @@ const createItem = (req, res, next) => {
       if (err.name === "ValidationError") {
         return next(new BadRequestStatusCode({ message: "Invalid data" }));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -33,7 +33,7 @@ const getItems = (req, res, next) => {
     .then((items) => res.status(REQUEST_STATUS_OK).send(items))
     .catch((err) => {
       console.error(err);
-      next(err);
+      return next(err);
     });
 };
 
@@ -44,9 +44,9 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        return res
-          .status(Forbidden)
-          .send({ message: "You are not allowed to delete this item" });
+        return next(
+          new Forbidden({ message: "You are not allowed to delete this item" })
+        );
       }
 
       return ClothingItem.findByIdAndDelete(itemId).then(() =>
@@ -59,13 +59,13 @@ const deleteItem = (req, res, next) => {
         return next(new BadRequestStatusCode({ message: "Invalid data" }));
       }
       if (err.name === "DocumentNotFoundError") {
-        return next(new ItemNotFound({ message: "Item not found" }));
+        return next(new NotFoundError({ message: "Item not found" }));
       }
-      next(err);
+      return next(err);
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findByIdAndUpdate(
@@ -81,7 +81,7 @@ const likeItem = (req, res) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        return res.status(ItemNotFound).send({ message: "Item not found" });
+        return next(new NotFoundError({ message: "Item not found" }));
       }
 
       if (err.name === "CastError") {
@@ -94,7 +94,7 @@ const likeItem = (req, res) => {
     });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findByIdAndUpdate(
@@ -114,7 +114,7 @@ const dislikeItem = (req, res) => {
       }
 
       if (err.name === "DocumentNotFoundError") {
-        return res.status(ItemNotFound).send({ message: "Item not found" });
+        return next(new NotFoundError({ message: "Item not found" }));
       }
 
       return next(

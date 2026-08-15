@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const itemRouter = require("./clothingItems");
-const { ItemNotFound } = require("../utils/errors");
+const { NotFoundError } = require("../utils/errors/NotFoundError");
 const { login, createUser } = require("../controllers/users");
 const auth = require("../middlewares/auth");
 const { getItems } = require("../controllers/clothingItems");
@@ -20,7 +20,7 @@ router.use(auth);
 router.use("/users", userRouter);
 router.use("/items", itemRouter);
 router.use((req, res, next) => {
-  next(new ItemNotFound("Requested resource not found"));
+  next(new NotFoundError("Requested resource not found"));
 });
 
 module.exports = router;
